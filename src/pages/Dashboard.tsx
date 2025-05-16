@@ -1,5 +1,5 @@
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -9,11 +9,52 @@ import StatCard from '@/components/dashboard/StatCard';
 import PeerCard from '@/components/dashboard/PeerCard';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
+
+interface UserProfile {
+  name: string;
+  streak: number;
+  quiz_points: number;
+  badges: string[];
+}
 
 const Dashboard: React.FC = () => {
   const { user, isLoading } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [isProfileLoading, setIsProfileLoading] = useState<boolean>(true);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (user) {
+        try {
+          const { data, error } = await supabase
+            .from('profiles')
+            .select('name, streak, quiz_points, badges')
+            .eq('id', user.id)
+            .single();
+          
+          if (error) throw error;
+          
+          setProfile(data as UserProfile);
+        } catch (error) {
+          console.error('Error fetching profile:', error);
+          // Fallback profile data
+          setProfile({
+            name: user.user_metadata?.name || 'User',
+            streak: 0,
+            quiz_points: 0,
+            badges: []
+          });
+        } finally {
+          setIsProfileLoading(false);
+        }
+      }
+    };
+    
+    fetchProfile();
+  }, [user]);
 
   const handleConnect = (peerName: string) => {
     toast({
@@ -22,7 +63,7 @@ const Dashboard: React.FC = () => {
     });
   };
 
-  if (isLoading) {
+  if (isLoading || isProfileLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <LoadingSpinner size="lg" />
@@ -35,6 +76,11 @@ const Dashboard: React.FC = () => {
     return null;
   }
 
+  const userName = profile?.name || user.user_metadata?.name || 'User';
+  const userStreak = profile?.streak || 0;
+  const userPoints = profile?.quiz_points || 0;
+  const userBadges = profile?.badges || [];
+
   // Mock peers data
   const suggestedPeers = [
     { id: '1', name: 'Alex Johnson', skills: ['Python', 'Machine Learning', 'Data Science'] },
@@ -46,27 +92,27 @@ const Dashboard: React.FC = () => {
   return (
     <div className="container max-w-7xl mx-auto p-4">
       <div className="flex flex-col gap-2 mb-8">
-        <h1 className="text-3xl font-bold">Welcome back, {user.name}</h1>
+        <h1 className="text-3xl font-bold">Welcome back, {userName}</h1>
         <p className="text-muted-foreground">Continue your learning journey where you left off.</p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4 mb-8">
         <StatCard
           title="Current Streak"
-          value={user.streak}
+          value={userStreak}
           icon={<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-flame"><path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z" /></svg>}
           description="Days in a row"
           trend={{ value: 20, isPositive: true }}
         />
         <StatCard
           title="Quiz Points"
-          value={user.points}
+          value={userPoints}
           icon={<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-trophy"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6" /><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18" /><path d="M4 22h16" /><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22" /><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22" /><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z" /></svg>}
           description="Total earned points"
         />
         <StatCard
           title="Badges Earned"
-          value={user.badges.length}
+          value={userBadges.length}
           icon={<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-medal"><path d="M7.21 15 2.66 7.14a2 2 0 0 1 .13-2.2L4.4 2.8A2 2 0 0 1 6 2h12a2 2 0 0 1 1.6.8l1.6 2.14a2 2 0 0 1 .14 2.2L16.79 15" /><path d="M11 12 5.12 2H2l7 12" /><path d="m13 12 5.88-10H22l-7 12" /><path d="M12 8V2" /><circle cx="12" cy="17" r="5" /></svg>}
           description="Achievement badges"
         />

@@ -1,0 +1,231 @@
+:root {
+    /* Light theme variables */
+    --bg-color-light: #ffffff;
+    --text-color-light: #333333;
+    --card-bg-light: #f0f0f0;
+    --toggle-bg-light: #e0e0e0;
+    --toggle-border-light: #d0d0d0;
+
+    /* Dark theme variables */
+    --bg-color-dark: #1a1a1a;
+    --text-color-dark: #ffffff;
+    --card-bg-dark: #2d2d2d;
+    --toggle-bg-dark: #404040;
+    --toggle-border-dark: #505050;
+
+    /* Default theme (light) */
+    --bg-color: var(--bg-color-light);
+    --text-color: var(--text-color-light);
+    --card-bg: var(--card-bg-light);
+    --toggle-bg: var(--toggle-bg-light);
+    --toggle-border: var(--toggle-border-light);
+}
+
+/* Dark theme class */
+body.dark-theme {
+    --bg-color: var(--bg-color-dark);
+    --text-color: var(--text-color-dark);
+    --card-bg: var(--card-bg-dark);
+    --toggle-bg: var(--toggle-bg-dark);
+    --toggle-border: var(--toggle-border-dark);
+}
+
+/* Global styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body {
+    font-family: system-ui, -apple-system, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+header {
+    padding: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+main {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.card {
+    background-color: var(--card-bg);
+    padding: 2rem;
+    border-radius: 8px;
+    margin-top: 2rem;
+}
+
+/* Toggle button styles */
+.theme-toggle {
+    background: var(--toggle-bg);
+    border: 2px solid var(--toggle-border);
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    padding: 0;
+    position: relative;
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.theme-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.theme-toggle:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--text-color), 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Sun styles */
+.sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 20px;
+    height: 20px;
+    background: var(--text-color);
+    border-radius: 50%;
+    transition: transform 0.3s, opacity 0.3s;
+    box-shadow: 0 0 8px var(--text-color);
+}
+
+.sun-beams {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    transform: translate(-50%, -50%);
+}
+
+.sun-beams::before,
+.sun-beams::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 2px;
+    height: 12px;
+    background: var(--text-color);
+    transform-origin: center;
+}
+
+/* Create 8 sun beams using rotations */
+.sun-beams::before {
+    box-shadow: 
+        0 0 2px var(--text-color),
+        0 20px 0 -10px var(--text-color),   /* Top */
+        14.14px 14.14px 0 -10px var(--text-color),   /* Top Right */
+        20px 0 0 -10px var(--text-color),   /* Right */
+        14.14px -14.14px 0 -10px var(--text-color),  /* Bottom Right */
+        0 -20px 0 -10px var(--text-color),  /* Bottom */
+        -14.14px -14.14px 0 -10px var(--text-color), /* Bottom Left */
+        -20px 0 0 -10px var(--text-color),  /* Left */
+        -14.14px 14.14px 0 -10px var(--text-color);  /* Top Left */
+}
+
+/* Moon styles */
+.moon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0);
+    width: 20px;
+    height: 20px;
+    background: var(--text-color);
+    border-radius: 50%;
+    transition: transform 0.3s, opacity 0.3s;
+    opacity: 0;
+    box-shadow: inset -4px -4px 0 0 var(--toggle-bg);
+}
+
+.moon-crater {
+    position: absolute;
+    background: var(--toggle-bg);
+    border-radius: 50%;
+    box-shadow: 0 0 2px rgba(0, 0, 0, 0.2);
+}
+
+.moon-crater:nth-child(1) {
+    width: 6px;
+    height: 6px;
+    top: 3px;
+    left: 8px;
+}
+
+.moon-crater:nth-child(2) {
+    width: 4px;
+    height: 4px;
+    top: 10px;
+    left: 4px;
+}
+
+.moon-crater:nth-child(3) {
+    width: 3px;
+    height: 3px;
+    top: 6px;
+    right: 4px;
+}
+
+/* Dark theme animations */
+body.dark-theme .sun {
+    transform: translate(-50%, -50%) scale(0);
+    opacity: 0;
+}
+
+body.dark-theme .moon {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+}
+
+/* Theme toggle wrapper styles */
+.theme-toggle-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.theme-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-color);
+    opacity: 0.8;
+    transition: opacity 0.2s;
+}
+
+.theme-toggle-wrapper:hover .theme-label {
+    opacity: 1;
+}
+
+/* Update responsive styles */
+@media (max-width: 600px) {
+    header {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
+
+    .theme-toggle-wrapper {
+        flex-direction: column;
+        gap: 0.25rem;
+    }
+
+    .theme-toggle {
+        width: 36px;
+        height: 36px;
+    }
+} 

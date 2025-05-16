@@ -1,4 +1,3 @@
-
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -6,7 +5,12 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
+import { SettingsProvider } from "@/contexts/SettingsContext";
 import { useAuth } from "@/contexts/AuthContext";
+
+// Styles
+import "@/assets/parchment-background.css";
 
 // Pages
 import Index from "./pages/Index";
@@ -16,6 +20,7 @@ import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Flashcards from "./pages/Flashcards";
 import Quiz from "./pages/Quiz";
+import Settings from "./pages/Settings";
 import NotFound from "./pages/NotFound";
 
 // Layout components
@@ -79,6 +84,14 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/settings"
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -89,21 +102,26 @@ const AppLayout = () => {
   const isAuthPage = ['/login', '/register', '/auth/callback'].includes(location.pathname);
 
   return (
-    <div className="min-h-screen flex flex-col w-full">
-      <Navbar />
-      {!isAuthPage ? (
-        <div className="flex flex-1">
-          <SidebarNav />
+    <>
+      <div className="gradient-background" />
+      <div className="min-h-screen flex flex-col w-full relative">
+        <Navbar />
+        {!isAuthPage ? (
+          <div className="flex flex-1">
+            <SidebarNav />
+            <main className="flex-1 relative">
+              <div className="content-overlay">
+                <AppRoutes />
+              </div>
+            </main>
+          </div>
+        ) : (
           <main className="flex-1">
             <AppRoutes />
           </main>
-        </div>
-      ) : (
-        <main className="flex-1">
-          <AppRoutes />
-        </main>
-      )}
-    </div>
+        )}
+      </div>
+    </>
   );
 };
 
@@ -111,13 +129,17 @@ const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
       <AuthProvider>
-        <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <SidebarProvider>
-            <AppLayout />
-          </SidebarProvider>
-        </TooltipProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <SidebarProvider>
+                <AppLayout />
+              </SidebarProvider>
+            </TooltipProvider>
+          </SettingsProvider>
+        </ThemeProvider>
       </AuthProvider>
     </BrowserRouter>
   </QueryClientProvider>

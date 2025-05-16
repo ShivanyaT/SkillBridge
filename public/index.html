@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dark Mode Toggle</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <header>
+        <h1>Dark Mode Demo</h1>
+        <div class="theme-toggle-wrapper">
+            <span class="theme-label">Toggle theme</span>
+            <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+                <div class="toggle-icon">
+                    <div class="sun-moon">
+                        <div class="sun">
+                            <div class="sun-beams"></div>
+                        </div>
+                        <div class="moon">
+                            <div class="moon-crater"></div>
+                            <div class="moon-crater"></div>
+                            <div class="moon-crater"></div>
+                        </div>
+                    </div>
+                </div>
+            </button>
+        </div>
+    </header>
+
+    <main>
+        <section class="content">
+            <h2>Welcome to the Dark Side (or Light Side)!</h2>
+            <p>This is a demonstration of a pure CSS dark mode toggle with animated sun and moon icons. The theme preference is saved in localStorage and persists across page reloads.</p>
+            <div class="card">
+                <h3>Features</h3>
+                <ul>
+                    <li>Pure CSS sun and moon icons</li>
+                    <li>Smooth transitions</li>
+                    <li>localStorage persistence</li>
+                    <li>Accessible toggle button</li>
+                    <li>Custom CSS properties</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+</html> 

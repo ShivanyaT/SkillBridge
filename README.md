@@ -8,3 +8,7 @@ SkillBridge is a modern web-based learning platform that offers interactive quiz
 -  **Quizzes:** Test your knowledge with 5-question MCQ quizzes per subject.
 -  **Subject Overview:** Each subject includes a 100+ word description with relevant learning links.
 -  **Responsive UI:** Works seamlessly across devices.
+
+## License
+
+This project is licensed under the MIT License. 

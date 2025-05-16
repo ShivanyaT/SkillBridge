@@ -6,11 +6,12 @@ import { Sidebar, SidebarContent, SidebarMenu, SidebarMenuButton, SidebarMenuIte
 import { LucideHome, BookOpenText, BookCheck, BrainCircuit } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from '@/contexts/AuthContext';
-import { useSidebarContext } from '@/components/ui/sidebar';
+import { useSidebar } from '@/components/ui/sidebar';
 
 const SidebarNav: React.FC = () => {
   const { user } = useAuth();
-  const { collapsed } = useSidebarContext();
+  const { state } = useSidebar();
+  const collapsed = state === "collapsed";
   const location = useLocation();
   
   if (!user) return null;
@@ -41,7 +42,7 @@ const SidebarNav: React.FC = () => {
             <SidebarMenuItem key={item.name}>
               <SidebarMenuButton asChild>
                 <Button
-                  variant={location.pathname === item.href ? "sidebar.accent" : "sidebar"}
+                  variant={location.pathname === item.href ? "secondary" : "ghost"}
                   className={cn(
                     "w-full justify-start",
                     collapsed ? "h-9 w-9 justify-center p-0" : "px-3"

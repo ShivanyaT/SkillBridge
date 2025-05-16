@@ -7,13 +7,14 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useAuth } from '@/contexts/AuthContext';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
-import { Mail } from 'lucide-react';
+import { Mail, User, LogIn } from 'lucide-react';
 
-const Login: React.FC = () => {
+const Register: React.FC = () => {
   const navigate = useNavigate();
-  const { login, signInWithGoogle, isLoading } = useAuth();
+  const { register, signInWithGoogle, isLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [name, setName] = useState('');
   const [error, setError] = useState('');
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -21,11 +22,11 @@ const Login: React.FC = () => {
     setError('');
     
     try {
-      await login(email, password);
-      // Navigation is handled by the auth state listener
+      await register(email, password, name);
+      // We don't navigate here as we want the user to verify their email first
     } catch (err) {
-      console.error("Login error:", err);
-      setError('Invalid email or password');
+      console.error("Registration error:", err);
+      // Error toast is already handled in the auth context
     }
   };
 
@@ -36,9 +37,9 @@ const Login: React.FC = () => {
           <div className="mx-auto h-12 w-12 rounded-full bg-gradient-to-br from-skill-purple to-skill-indigo flex items-center justify-center mb-2">
             <span className="font-bold text-white text-lg">SB</span>
           </div>
-          <CardTitle className="text-2xl font-bold">Welcome back</CardTitle>
+          <CardTitle className="text-2xl font-bold">Create an account</CardTitle>
           <CardDescription>
-            Enter your credentials to access your account
+            Enter your information to create an account
           </CardDescription>
         </CardHeader>
         <form onSubmit={handleSubmit}>
@@ -48,6 +49,21 @@ const Login: React.FC = () => {
                 {error}
               </div>
             )}
+            <div className="space-y-2">
+              <Label htmlFor="name">Full Name</Label>
+              <div className="relative">
+                <User className="absolute left-3 top-3 h-4 w-4 text-muted-foreground" />
+                <Input
+                  id="name"
+                  type="text"
+                  placeholder="John Doe"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="pl-10"
+                  required
+                />
+              </div>
+            </div>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
               <div className="relative">
@@ -64,12 +80,7 @@ const Login: React.FC = () => {
               </div>
             </div>
             <div className="space-y-2">
-              <div className="flex items-center justify-between">
-                <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-xs text-primary hover:underline">
-                  Forgot password?
-                </a>
-              </div>
+              <Label htmlFor="password">Password</Label>
               <Input
                 id="password"
                 type="password"
@@ -77,7 +88,11 @@ const Login: React.FC = () => {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
+                minLength={6}
               />
+              <p className="text-xs text-muted-foreground">
+                Password must be at least 6 characters
+              </p>
             </div>
           </CardContent>
           <CardFooter className="flex flex-col space-y-4">
@@ -87,7 +102,7 @@ const Login: React.FC = () => {
               disabled={isLoading}
             >
               {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : null}
-              Sign in
+              Create account
             </Button>
             
             <div className="relative w-full">
@@ -115,16 +130,16 @@ const Login: React.FC = () => {
                 <path fillRule="evenodd" clipRule="evenodd" d="M9.79669 12.8977C9.69834 12.6097 9.64282 12.3023 9.64282 11.9997C9.64282 11.697 9.68866 11.3897 9.79669 11.1016L7.98772 9.77609C7.65146 10.4493 7.46436 11.1987 7.46436 12.0003C7.46436 12.802 7.65146 13.5513 7.98772 14.2246L9.79669 12.8977Z" fill="#FBBC05" />
                 <path fillRule="evenodd" clipRule="evenodd" d="M12.0508 16.8C13.175 16.8 14.1325 16.4403 14.8926 15.8059L13.1181 14.5289C12.7043 14.801 12.2013 14.9657 12.0508 14.9657C11.0497 14.9657 10.1879 14.342 9.79673 13.4085L7.98776 14.7243C8.73813 16.2894 10.2608 17.4 12.0508 17.4C12.0605 17.4 12.051 17.4 12.0508 17.4Z" fill="#34A853" />
               </svg>
-              Sign in with Google
+              Sign up with Google
             </Button>
             
             <div className="text-center text-sm">
-              Don't have an account?{" "}
+              Already have an account?{" "}
               <a href="#" className="text-primary hover:underline" onClick={(e) => {
                 e.preventDefault();
-                navigate('/register');
+                navigate('/login');
               }}>
-                Sign up
+                Sign in
               </a>
             </div>
           </CardFooter>
@@ -134,4 +149,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login;
+export default Register;

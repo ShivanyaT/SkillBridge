@@ -3,13 +3,16 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation, Navigate } from "react-router-dom";
 import { SidebarProvider } from "@/components/ui/sidebar";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { useAuth } from "@/contexts/AuthContext";
 
 // Pages
 import Index from "./pages/Index";
 import Login from "./pages/Login";
+import Register from "./pages/Register";
+import AuthCallback from "./pages/AuthCallback";
 import Dashboard from "./pages/Dashboard";
 import Flashcards from "./pages/Flashcards";
 import Quiz from "./pages/Quiz";
@@ -21,6 +24,89 @@ import SidebarNav from "./components/layout/SidebarNav";
 
 const queryClient = new QueryClient();
 
+// Protected route wrapper
+const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
+  const { isAuthenticated, isLoading } = useAuth();
+  const location = useLocation();
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin h-8 w-8 border-4 border-primary border-t-transparent rounded-full mx-auto"></div>
+          <h2 className="mt-4 text-lg font-medium">Loading...</h2>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  return children;
+};
+
+// App Routes definition
+const AppRoutes = () => {
+  return (
+    <Routes>
+      <Route path="/" element={<Index />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route
+        path="/dashboard"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/flashcards"
+        element={
+          <ProtectedRoute>
+            <Flashcards />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/quiz"
+        element={
+          <ProtectedRoute>
+            <Quiz />
+          </ProtectedRoute>
+        }
+      />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
+  );
+};
+
+const AppLayout = () => {
+  const location = useLocation();
+  const isAuthPage = ['/login', '/register', '/auth/callback'].includes(location.pathname);
+
+  return (
+    <div className="min-h-screen flex flex-col w-full">
+      <Navbar />
+      {!isAuthPage ? (
+        <div className="flex flex-1">
+          <SidebarNav />
+          <main className="flex-1">
+            <AppRoutes />
+          </main>
+        </div>
+      ) : (
+        <main className="flex-1">
+          <AppRoutes />
+        </main>
+      )}
+    </div>
+  );
+};
+
 const App = () => (
   <QueryClientProvider client={queryClient}>
     <BrowserRouter>
@@ -29,22 +115,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <SidebarProvider>
-            <div className="min-h-screen flex flex-col w-full">
-              <Navbar />
-              <div className="flex flex-1">
-                <SidebarNav />
-                <main className="flex-1">
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/login" element={<Login />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
-                    <Route path="/flashcards" element={<Flashcards />} />
-                    <Route path="/quiz" element={<Quiz />} />
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
-            </div>
+            <AppLayout />
           </SidebarProvider>
         </TooltipProvider>
       </AuthProvider>

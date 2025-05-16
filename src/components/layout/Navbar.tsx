@@ -3,8 +3,20 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { SidebarTrigger } from '@/components/ui/sidebar';
+import { useAuth } from '@/contexts/AuthContext';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { LogIn, User } from 'lucide-react';
 
 const Navbar: React.FC = () => {
+  const { isAuthenticated, user, logout } = useAuth();
+
   return (
     <header className="sticky top-0 z-30 w-full border-b bg-background/95 backdrop-blur">
       <div className="container flex h-16 items-center justify-between">
@@ -17,13 +29,46 @@ const Navbar: React.FC = () => {
             <span className="font-bold text-lg gradient-text hidden sm:inline-block">SkillBridge</span>
           </Link>
         </div>
+        
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">Sign in</Link>
-          </Button>
-          <Button size="sm" className="bg-gradient-to-r from-skill-purple to-skill-indigo hover:opacity-90" asChild>
-            <Link to="/register">Sign up</Link>
-          </Button>
+          {isAuthenticated ? (
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" size="sm" className="relative">
+                  <User size={18} className="mr-2" />
+                  <span className="hidden md:inline-block">{user?.user_metadata?.name || 'User'}</span>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuLabel>My Account</DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem asChild>
+                  <Link to="/dashboard">Dashboard</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/flashcards">Flashcards</Link>
+                </DropdownMenuItem>
+                <DropdownMenuItem asChild>
+                  <Link to="/quiz">Quizzes</Link>
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={() => logout()}>
+                  Log out
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">
+                  <LogIn size={16} className="mr-2" /> Sign in
+                </Link>
+              </Button>
+              <Button size="sm" className="bg-gradient-to-r from-skill-purple to-skill-indigo hover:opacity-90" asChild>
+                <Link to="/register">Sign up</Link>
+              </Button>
+            </>
+          )}
         </div>
       </div>
     </header>

@@ -1,65 +1,60 @@
 
-import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import React, { useState } from 'react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import FlashcardItem, { Flashcard } from '@/components/flashcards/FlashcardItem';
-import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import { FlipHorizontal } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
-import { useToast } from '@/hooks/use-toast';
-import { generateFlashcards } from '@/utils/api';
+
+interface FlashcardData {
+  question: string;
+  answer: string;
+}
+
+const flashcardsData = {
+  Python: [
+    { question: "What is a list in Python?", answer: "An ordered, mutable collection of items." },
+    { question: "What is a function?", answer: "A reusable block of code that performs a specific task." },
+    { question: "What does 'len()' do?", answer: "Returns the number of items in an object." },
+    { question: "What is a dictionary?", answer: "A collection of key-value pairs." },
+    { question: "What does 'print()' do?", answer: "Displays output to the console." },
+  ],
+  Maths: [
+    { question: "What is the Pythagorean theorem?", answer: "a² + b² = c²" },
+    { question: "What is 5 × 6?", answer: "30" },
+    { question: "What is a prime number?", answer: "A number divisible only by 1 and itself." },
+    { question: "What is the square root of 49?", answer: "7" },
+    { question: "What is the value of pi (π)?", answer: "Approximately 3.14" },
+  ],
+  English: [
+    { question: "What is a noun?", answer: "A word that names a person, place, thing, or idea." },
+    { question: "What is a metaphor?", answer: "A figure of speech that compares two things without using 'like' or 'as'." },
+    { question: "What is a verb?", answer: "A word that expresses action or state." },
+    { question: "What is an adjective?", answer: "A word that describes a noun." },
+    { question: "What is a synonym for 'happy'?", answer: "Joyful" },
+  ],
+};
 
 const Flashcards: React.FC = () => {
   const { user, isLoading: isAuthLoading } = useAuth();
-  const [subject, setSubject] = useState('Python');
-  const [flashcards, setFlashcards] = useState<Flashcard[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [subject, setSubject] = useState<keyof typeof flashcardsData>('Python');
   const navigate = useNavigate();
-  const { toast } = useToast();
-  
-  const subjects = ['Python', 'Maths', 'English'];
 
-  useEffect(() => {
-    if (!isAuthLoading && !user) {
-      navigate('/login');
-    }
-  }, [user, isAuthLoading, navigate]);
-
-  useEffect(() => {
-    // Load initial flashcards
-    handleGenerateFlashcards();
-  }, [subject]);
-
-  const handleGenerateFlashcards = async () => {
-    setIsLoading(true);
-    try {
-      const generatedFlashcards = await generateFlashcards(subject);
-      setFlashcards(generatedFlashcards);
-      toast({
-        title: "Flashcards loaded",
-        description: `${generatedFlashcards.length} ${subject} flashcards are ready for you.`,
-      });
-    } catch (error) {
-      toast({
-        title: "Failed to load flashcards",
-        description: "Please try again later.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const subjects = Object.keys(flashcardsData) as Array<keyof typeof flashcardsData>;
 
   if (isAuthLoading) {
     return (
       <div className="flex items-center justify-center min-h-screen">
-        <LoadingSpinner size="lg" />
+        <div className="animate-spin rounded-full h-8 w-8 border-t-2 border-b-2 border-primary"></div>
       </div>
     );
   }
 
-  if (!user) return null;
+  if (!user) {
+    navigate('/login');
+    return null;
+  }
 
   return (
     <div className="container max-w-5xl mx-auto p-4">
@@ -69,17 +64,15 @@ const Flashcards: React.FC = () => {
       </div>
       
       <Card className="mb-8">
-        <CardHeader>
-          <CardTitle>Study Settings</CardTitle>
-          <CardDescription>Choose a subject and generate flashcards to study</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex flex-col sm:flex-row gap-4">
+        <CardContent className="p-6">
+          <div className="flex flex-col sm:flex-row gap-4 items-center">
             <div className="w-full sm:w-64">
+              <label htmlFor="subject-select" className="block text-sm font-medium mb-2">
+                Select Subject
+              </label>
               <Select
                 value={subject}
-                onValueChange={setSubject}
-                disabled={isLoading}
+                onValueChange={(value) => setSubject(value as keyof typeof flashcardsData)}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select subject" />
@@ -91,39 +84,100 @@ const Flashcards: React.FC = () => {
                 </SelectContent>
               </Select>
             </div>
-            <Button 
-              onClick={handleGenerateFlashcards} 
-              className="bg-gradient-to-r from-skill-purple to-skill-indigo hover:opacity-90"
-              disabled={isLoading}
-            >
-              {isLoading ? <LoadingSpinner size="sm" className="mr-2" /> : null}
-              Generate Flashcards
-            </Button>
           </div>
         </CardContent>
       </Card>
       
-      {isLoading ? (
-        <div className="flex justify-center items-center py-20">
-          <LoadingSpinner size="lg" />
-          <span className="ml-3 text-lg">Generating flashcards...</span>
-        </div>
-      ) : flashcards.length > 0 ? (
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {flashcards.map((flashcard, index) => (
-            <FlashcardItem 
-              key={flashcard.id} 
-              flashcard={flashcard} 
-              index={index}
-            />
-          ))}
-        </div>
-      ) : (
-        <div className="text-center py-20">
-          <div className="text-lg mb-2">No flashcards available</div>
-          <p className="text-muted-foreground">Select a subject and generate flashcards to start studying</p>
-        </div>
-      )}
+      <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+        {flashcardsData[subject].map((flashcard, index) => (
+          <FlashcardItem 
+            key={index} 
+            flashcard={flashcard} 
+            index={index}
+          />
+        ))}
+      </div>
+    </div>
+  );
+};
+
+interface FlashcardItemProps {
+  flashcard: FlashcardData;
+  index: number;
+}
+
+const FlashcardItem: React.FC<FlashcardItemProps> = ({ flashcard, index }) => {
+  const [isFlipped, setIsFlipped] = useState(false);
+  
+  const handleFlip = () => {
+    setIsFlipped(!isFlipped);
+  };
+  
+  return (
+    <div className="h-[220px] perspective-1000">
+      <div 
+        className={`relative w-full h-full transition-all duration-500 ${
+          isFlipped ? "rotate-y-180" : ""
+        }`}
+        style={{ 
+          transformStyle: 'preserve-3d',
+        }}
+      >
+        {/* Question Side */}
+        <Card 
+          className={`absolute w-full h-full ${
+            isFlipped ? "opacity-0 pointer-events-none" : "opacity-100"
+          }`}
+          style={{ 
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <CardContent className="flex flex-col justify-between h-full p-6">
+            <div>
+              <div className="text-sm text-muted-foreground mb-2">Card {index + 1}</div>
+              <div className="mt-2 text-lg font-medium">
+                {flashcard.question}
+              </div>
+            </div>
+            <Button 
+              onClick={handleFlip} 
+              className="mt-4"
+              variant="outline"
+            >
+              <FlipHorizontal className="mr-2 h-4 w-4" />
+              Show Answer
+            </Button>
+          </CardContent>
+        </Card>
+        
+        {/* Answer Side */}
+        <Card 
+          className={`absolute w-full h-full ${
+            isFlipped ? "opacity-100" : "opacity-0 pointer-events-none"
+          }`}
+          style={{ 
+            transform: 'rotateY(180deg)',
+            backfaceVisibility: 'hidden',
+          }}
+        >
+          <CardContent className="flex flex-col justify-between h-full p-6">
+            <div>
+              <div className="text-sm text-muted-foreground mb-2">Answer</div>
+              <div className="mt-2 text-lg font-medium">
+                {flashcard.answer}
+              </div>
+            </div>
+            <Button 
+              onClick={handleFlip} 
+              className="mt-4"
+              variant="outline"
+            >
+              <FlipHorizontal className="mr-2 h-4 w-4" />
+              Show Question
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 };

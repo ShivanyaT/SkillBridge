@@ -1,73 +1,26 @@
-# Welcome to your Lovable project
+# SkillBridge - Interactive Learning Platform
 
-## Project info
+SkillBridge is a modern web-based learning platform that offers interactive quizzes, flashcards, and subject overviews for multiple subjects like JavaScript, Python, HTML, Math, English, and History. Designed with simplicity and accessibility in mind.
 
-**URL**: https://lovable.dev/projects/6ef2ebcb-e225-48a7-9f72-a9d84bfc0fcc
+##  Features
 
-## How can I edit this code?
+-  **Flashcards:** Learn and memorize key terms and definitions.
+-  **Quizzes:** Test your knowledge with 5-question MCQ quizzes per subject.
+-  **Subject Overview:** Each subject includes a 100+ word description with relevant learning links.
+-  **Responsive UI:** Works seamlessly across devices.
 
-There are several ways of editing your application.
+## Testing
 
-**Use Lovable**
+Features
+-Clean and Intuitive Design: 
+ Navigate through courses effortlessly with a visually appealing and clutter-free interface.
+-Structured Course Modules: 
+ Enjoy a logical progression of learning with clearly defined course modules.
+-Responsive Platform: 
+ Access SkillBridge on any device—desktop, tablet, or smartphone—with a consistent and enjoyable learning experience.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/6ef2ebcb-e225-48a7-9f72-a9d84bfc0fcc) and start prompting.
 
-Changes made via Lovable will be committed automatically to this repo.
 
-**Use your preferred IDE**
+## License
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
-
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
-
-Follow these steps:
-
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
-
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
-
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/6ef2ebcb-e225-48a7-9f72-a9d84bfc0fcc) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+This project is licensed under the MIT License. See the LICENSE file for details. 
